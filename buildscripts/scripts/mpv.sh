@@ -4,6 +4,7 @@
 . ../../include/path.sh
 
 build=_build$ndk_suffix
+vulkan=${MPV_VULKAN:-enabled}
 
 if [ "$1" == "build" ]; then
 	true
@@ -26,7 +27,7 @@ meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
  	-Dlua=disabled \
  	-Dcplayer=false \
 	-Diconv=disabled \
-	-Dvulkan=enabled \
+	-Dvulkan=$vulkan \
  	-Dmanpage-build=disabled
 
 ninja -C $build -j$cores

@@ -9,6 +9,16 @@ on:
         required: false
         default: false
         type: boolean
+      mpv_vulkan:
+        description: 'Enable mpv Vulkan'
+        required: true
+        default: true
+        type: boolean
+      libplacebo_vulkan:
+        description: 'Enable libplacebo Vulkan'
+        required: true
+        default: true
+        type: boolean
       logLevel:
         description: 'Log level'
         required: true
@@ -19,6 +29,8 @@ permissions:
 
 env:
   NDK_VER: 27.1.12297006
+  MPV_VULKAN: ${{ inputs.mpv_vulkan && 'enabled' || 'disabled' }}
+  LIBPLACEBO_VULKAN: ${{ inputs.libplacebo_vulkan && 'enabled' || 'disabled' }}
 
 jobs:
   build:
