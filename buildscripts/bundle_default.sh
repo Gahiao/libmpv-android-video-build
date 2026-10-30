@@ -49,6 +49,14 @@ cd build/app/outputs/apk/release/ || exit 1
 rm -r lib/*/libapp.so
 rm -r lib/*/libflutter.so
 
+# media_kit_native_event_loop 的 example 不带 media_kit_video 的 helper .so；
+# 从已知可用的 20260906 release 取，否则 VideoOutput 初始化会崩。
+for arch in arm64-v8a armeabi-v7a x86_64; do
+  curl -fL -o "/tmp/default-$arch.jar" \
+    "https://github.com/My-Responsitories/libmpv-android-video-build/releases/download/20260906/default-$arch.jar"
+  unzip -o -q "/tmp/default-$arch.jar" "lib/$arch/libmediakitandroidhelper.so" -d .
+done
+
 # archs=("arm64-v8a" "armeabi-v7a" "x86" "x86_64")
 # pairs=("aarch64-linux-android" "arm-linux-androideabi" "i686-linux-android" "x86_64-linux-android")
 
