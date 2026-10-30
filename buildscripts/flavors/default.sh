@@ -33,7 +33,7 @@ cpuflags=
 	--enable-version3 \
 	--enable-static \
 	--disable-shared \
-	--disable-vulkan \
+	--enable-vulkan \
 	--disable-iconv \
 	--disable-debug \
 	--pkg-config-flags=--static \
