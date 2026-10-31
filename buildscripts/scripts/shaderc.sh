@@ -28,16 +28,23 @@ ndk-build -j$cores \
 	libshaderc_combined
 
 cd "$builddir"
-cp -r include/* "$prefix_dir/include"
+# NDK 的 shaderc 构建会把头文件生成到 NDK_APP_LIBS_OUT/../include，
+# 即 $builddir/include，而不是源码树里的 include/。
+cp -r "$builddir/include"/* "$prefix_dir/include"
 cp libs/*/$abi/libshaderc.a "$prefix_dir/lib/libshaderc_combined.a"
 
 # create a pkgconfig file
 # 'libc++' instead of 'libstdc++': workaround for meson linking bug
 mkdir -p "$prefix_dir"/lib/pkgconfig
 cat >"$prefix_dir"/lib/pkgconfig/shaderc_combined.pc <<"END"
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
 Name: shaderc_combined
 Description:
 Version: 2022.3-unknown
-Libs: -L/usr/lib -lshaderc_combined
+Libs: -L${libdir} -lshaderc_combined
 Cflags: -I${includedir}
 END

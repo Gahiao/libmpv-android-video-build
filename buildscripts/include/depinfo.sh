@@ -32,5 +32,7 @@ dep_harfbuzz=()
 dep_libass=(freetype fribidi harfbuzz)
 dep_lua=()
 dep_shaderc=()
-dep_libplacebo=()
+# libplacebo 的 Vulkan 后端需要 SPIR-V 编译器（shaderc）；否则
+# vo=gpu-next + gpu-context=androidvk 会在创建 Vulkan device 时失败。
+dep_libplacebo=(shaderc)
 dep_mpv=(ffmpeg libass libplacebo)
