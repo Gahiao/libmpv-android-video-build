@@ -72,10 +72,31 @@ jobs:
       #   run: |
       #     sudo chmod +x bundle_encoders-gpl.sh
       #     ./bundle_encoders-gpl.sh
+      - name: Generate checksums
+        working-directory: ./output
+        run: sha256sum *.jar > SHA256SUMS
+
       - uses: actions/upload-artifact@v7
         with:
           name: artifact
-          path: ./output/*.jar
+          path: ./output/*
+
+      # PiliNara 构建时从 releases/latest/download 自动拉取这里的滚动 release。
+      # 打开 Vulkan 的手动 Build 会更新 libmpv-latest，App 无需再手工替换 jar。
+      - name: Publish rolling libmpv release
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mpv_vulkan && inputs.libplacebo_vulkan }}
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: libmpv-latest
+          name: libmpv latest
+          body: |
+            PiliNara 自动拉取的最新 libmpv 构建。
+            提交：${{ github.sha }}
+          make_latest: true
+          overwrite_files: true
+          files: |
+            output/*.jar
+            output/SHA256SUMS
 
       - name: Set Tag Name
         if: ${{ github.event.inputs.release == 'true' }}
@@ -85,5 +106,7 @@ jobs:
         if: ${{ github.event.inputs.release == 'true' }}
         with:
           tag_name: ${{ env.TAG_NAME }}
+          make_latest: false
           files: |
             output/*.jar
+            output/SHA256SUMS
