@@ -30,21 +30,23 @@ ndk-build -j$cores \
 cd "$builddir"
 # NDK 的 shaderc 构建会把头文件生成到 NDK_APP_LIBS_OUT/../include，
 # 即 $builddir/include，而不是源码树里的 include/。
+mkdir -p "$prefix_dir/include"
 cp -r "$builddir/include"/* "$prefix_dir/include"
 cp libs/*/$abi/libshaderc.a "$prefix_dir/lib/libshaderc_combined.a"
 
 # create a pkgconfig file
-# 'libc++' instead of 'libstdc++': workaround for meson linking bug
+# libplacebo 的 meson 用 dependency('shaderc') 查找的是 shaderc.pc，
+# 但 NDK 合并出来的静态库名是 libshaderc_combined.a，所以 Libs 仍写后者。
 mkdir -p "$prefix_dir"/lib/pkgconfig
-cat >"$prefix_dir"/lib/pkgconfig/shaderc_combined.pc <<"END"
-prefix=${pcfiledir}/../..
+cat >"$prefix_dir"/lib/pkgconfig/shaderc.pc <<"END"
+prefix=/usr/local
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
-Name: shaderc_combined
-Description:
-Version: 2022.3-unknown
+Name: shaderc
+Description: Combined shaderc static library from the Android NDK
+Version: 2022.3
 Libs: -L${libdir} -lshaderc_combined
 Cflags: -I${includedir}
 END
